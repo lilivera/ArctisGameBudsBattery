@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="src/ArctisGameBudsBattery.Core/ArctisGameBudsBattery.Core.csproj" />
+  <Project Path="src/ArctisGameBudsBattery/ArctisGameBudsBattery.csproj" />
+  <Project Path="probes/ArctisGameBudsProbe/ArctisGameBudsProbe.csproj" />
+  <Project Path="tests/ArctisGameBudsBattery.Tests/ArctisGameBudsBattery.Tests.csproj" />
+</Solution>

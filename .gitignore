@@ -1,0 +1,13 @@
+# ビルド生成物・開発環境
+**/bin/
+**/obj/
+artifacts/
+TestResults/
+.vs/
+.idea/
+*.user
+*.suo
+*.log
+*.zip
+# 調査用に取得した参照リポジトリ
+.reference/
