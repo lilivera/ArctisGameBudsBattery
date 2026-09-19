@@ -44,7 +44,7 @@ public sealed class Configuration : IPluginConfiguration
 
     public int StaleAfterMinutes { get; set; } = 2;
 
-    public int RefreshIntervalSeconds { get; set; } = 30;
+    public int RefreshIntervalSeconds { get; set; } = BatteryTiming.DefaultRefreshSeconds;
 
     public bool HideWhenDisconnected { get; set; }
 
@@ -58,12 +58,23 @@ public sealed class Configuration : IPluginConfiguration
     {
         _pluginInterface = pluginInterface;
         Normalize();
+        ApplyUiSettings();
     }
 
     public void Save()
     {
         Normalize();
+        ApplyUiSettings();
         _pluginInterface?.SavePluginConfig(this);
+    }
+
+    public int GetMinimumStaleAfterMinutes() => BatteryTiming.MinimumStaleMinutes(RefreshIntervalSeconds);
+
+    private void ApplyUiSettings()
+    {
+        // UI非表示時はDrawが呼ばれないため、読み込み・変更時に直接反映する。
+        if (_pluginInterface is not null)
+            _pluginInterface.UiBuilder.DisableUserUiHide = ShowWhenGameUiHidden;
     }
 
     private void Normalize()
@@ -77,7 +88,7 @@ public sealed class Configuration : IPluginConfiguration
         Opacity = Math.Clamp(Opacity, 0f, 1f);
         LowBatteryThreshold = Math.Clamp(LowBatteryThreshold, 1, 100);
         CriticalBatteryThreshold = Math.Clamp(CriticalBatteryThreshold, 1, LowBatteryThreshold);
-        StaleAfterMinutes = Math.Clamp(StaleAfterMinutes, 1, 1440);
-        RefreshIntervalSeconds = Math.Clamp(RefreshIntervalSeconds, 5, 300);
+        RefreshIntervalSeconds = BatteryTiming.ClampRefreshSeconds(RefreshIntervalSeconds);
+        StaleAfterMinutes = Math.Clamp(StaleAfterMinutes, GetMinimumStaleAfterMinutes(), 1440);
     }
 }

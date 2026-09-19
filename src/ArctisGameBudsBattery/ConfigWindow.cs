@@ -89,7 +89,7 @@ internal sealed class ConfigWindow : Window
         }
 
         var staleMinutes = _configuration.StaleAfterMinutes;
-        if (ImGui.SliderInt("古い値とみなす時間（分）", ref staleMinutes, 1, 120))
+        if (ImGui.SliderInt("古い値とみなす時間（分）", ref staleMinutes, _configuration.GetMinimumStaleAfterMinutes(), 120))
         {
             _configuration.StaleAfterMinutes = staleMinutes;
             changed = true;
@@ -97,7 +97,7 @@ internal sealed class ConfigWindow : Window
 
         if (ImGui.IsItemHovered())
         {
-            ImGui.SetTooltip("この時間を超えた場合、未接続と判断します");
+            ImGui.SetTooltip("正常な更新待ちで表示が消えないよう、更新間隔より長い時間へ自動補正します。");
         }
 
         var refreshSeconds = _configuration.RefreshIntervalSeconds;

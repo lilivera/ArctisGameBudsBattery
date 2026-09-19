@@ -7,7 +7,7 @@ public sealed class BatteryMonitor : IDisposable, IAsyncDisposable
     private readonly Task _worker;
     private CancellationTokenSource? _cycle;
     private BatteryState _state = new();
-    private int _refreshSeconds = 30;
+    private int _refreshSeconds = BatteryTiming.DefaultRefreshSeconds;
     private long _generation;
     private bool _disposed;
 
@@ -21,7 +21,7 @@ public sealed class BatteryMonitor : IDisposable, IAsyncDisposable
 
     public BatteryState Current => Volatile.Read(ref _state);
 
-    public void SetRefreshInterval(int seconds) => Volatile.Write(ref _refreshSeconds, Math.Clamp(seconds, 5, 300));
+    public void SetRefreshInterval(int seconds) => Volatile.Write(ref _refreshSeconds, BatteryTiming.ClampRefreshSeconds(seconds));
 
     public void RequestReconnect()
     {

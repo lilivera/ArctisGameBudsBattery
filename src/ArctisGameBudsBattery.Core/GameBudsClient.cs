@@ -19,7 +19,7 @@ internal sealed class GameBudsClient : IGameBudsClient
         if (device is null) return new BatteryQueryResult(false);
 
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        timeout.CancelAfter(TimeSpan.FromSeconds(3));
+        timeout.CancelAfter(TimeSpan.FromSeconds(BatteryTiming.ResponseTimeoutSeconds));
         try
         {
             // 問い合わせごとに開き直し、前回からキューに溜まった応答の再利用を避ける。

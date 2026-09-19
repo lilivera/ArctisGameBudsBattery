@@ -3,4 +3,5 @@
   <Project Path="src/ArctisGameBudsBattery/ArctisGameBudsBattery.csproj" />
   <Project Path="probes/ArctisGameBudsProbe/ArctisGameBudsProbe.csproj" />
   <Project Path="tests/ArctisGameBudsBattery.Tests/ArctisGameBudsBattery.Tests.csproj" />
+  <Project Path="tests/ArctisGameBudsBattery.Plugin.Tests/ArctisGameBudsBattery.Plugin.Tests.csproj" />
 </Solution>

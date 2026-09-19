@@ -10,6 +10,9 @@ try {
     dotnet test tests/ArctisGameBudsBattery.Tests -c Release --no-build
     if ($LASTEXITCODE -ne 0) { throw 'テストに失敗しました。' }
 
+    dotnet test tests/ArctisGameBudsBattery.Plugin.Tests -c Release --no-build
+    if ($LASTEXITCODE -ne 0) { throw 'プラグインの回帰テストに失敗しました。' }
+
     $packagePath = Join-Path $projectRoot 'src/ArctisGameBudsBattery/bin/Release/ArctisGameBudsBattery/latest.zip'
     & (Join-Path $PSScriptRoot 'Test-PluginRepository.ps1') -PackagePath $packagePath
 

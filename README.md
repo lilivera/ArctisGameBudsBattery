@@ -3,7 +3,7 @@
 SteelSeries Arctis GameBudsの左右バッテリー残量を、FINAL FANTASY XIV内に表示するDalamudプラグインです。
 [InzoneBudsBattery](https://github.com/zxe-ll/InzoneBudsBattery)をベースに、GameBuds用の通信・解析処理へ置き換えています。
 
-**バージョン0.1.0：Windows実機で残量取得を確認済み。ゲーム内での表示・操作は未検証です。**
+**バージョン0.1.1：初期化・終了処理、表示設定の不具合を修正。Windows実機で取得・再接続・停止を確認済み。ゲーム内での表示・操作は未検証です。**
 
 ## 機能
 
@@ -14,6 +14,7 @@ SteelSeries Arctis GameBudsの左右バッテリー残量を、FINAL FANTASY XIV
 - 戦闘中・ゲームUI非表示時・未接続時の表示設定
 - 定期照会（初期値30秒）、エラー時の再試行、手動再接続
 - 古い値の明示、DTRでは古い残量を非表示
+- 更新間隔に合わせた鮮度しきい値の自動補正（例：更新300秒なら最低6分）
 - ゲームを起動せず利用できる診断ツール
 
 ## 対応環境と制限
@@ -42,6 +43,8 @@ https://raw.githubusercontent.com/lilivera/ArctisGameBudsBattery/main/pluginmast
 
 配布ZIPは[GitHub Releases](https://github.com/lilivera/ArctisGameBudsBattery/releases/latest)からも取得できます。
 すでにローカルのDev Pluginとして読み込んでいる場合は、そちらをアンロードしてから切り替えてください。
+
+導入済みの場合は `/xlplugins` の更新操作で最新版へ更新できます。設定は引き継がれ、更新間隔に対して短すぎる鮮度しきい値だけ自動補正されます。
 
 ## ローカルビルドを試す
 
@@ -78,6 +81,7 @@ DLLだけを別の場所へ移動しないでください。`ArctisGameBudsBatte
 # 個別に実行する場合
 dotnet build .\ArctisGameBudsBattery.slnx -c Release
 dotnet test .\tests\ArctisGameBudsBattery.Tests -c Release --no-build
+dotnet test .\tests\ArctisGameBudsBattery.Plugin.Tests -c Release --no-build
 ```
 
 再ビルドする際は、ゲーム内でプラグインをアンロードしてDLLのロックを解除してください。
@@ -87,11 +91,12 @@ dotnet test .\tests\ArctisGameBudsBattery.Tests -c Release --no-build
 1. プロジェクトの `AssemblyVersion` / `FileVersion` を更新します。
 2. `pluginmaster.json` のバージョン、3つのダウンロードURL、`LastUpdate`（UTCのUnix秒）を更新します。
 3. `docs/releases/vX.Y.Z.md` に日本語のリリースノートを追加します。
-4. `scripts/Build.ps1` で検証し、変更を `main` へpushします。
-5. バージョンに対応するタグ（例：`0.1.0.0` → `v0.1.0`）をpushします。
+4. `scripts/Build.ps1` で検証してコミットし、バージョンに対応するタグ（例：`0.1.1.0` → `v0.1.1`）を先にpushします。
+5. GitHub Actionsの成功と配布ZIPの取得を確認してから、そのコミットを `main` へpushします。
 
 GitHub Actionsがビルド・テスト・配布定義の整合性検査を実行し、GitHub Releaseへ `latest.zip` を添付します。
 公開が完了すると、同じカスタムリポジトリURLからインストール・更新できます。
+この順序により、配布ZIPが完成するまでカスタムリポジトリは既存の利用可能なバージョンを案内します。
 
 ## ゲームなしで残量を確認する
 
@@ -115,6 +120,7 @@ src/ArctisGameBudsBattery/       Dalamud・設定・表示
 src/ArctisGameBudsBattery.Core/  HID通信・残量解析・定期取得
 probes/ArctisGameBudsProbe/      実機診断ツール
 tests/ArctisGameBudsBattery.Tests/  解析・鮮度・再接続のテスト
+tests/ArctisGameBudsBattery.Plugin.Tests/  初期化・終了・設定適用の回帰テスト
 docs/PROTOCOL.md                通信仕様と根拠
 docs/VALIDATION.md              確認済みの結果と残りの検証項目
 ```

@@ -26,6 +26,7 @@ public sealed class Plugin : IDalamudPlugin
     private readonly ArctisBatteryService _batteryService;
     private readonly OverlayWindow _overlayWindow;
     private readonly ConfigWindow _configWindow;
+    private readonly Stack<Action> _cleanupActions = new();
     private bool _disposed;
 
     public Plugin(
@@ -46,29 +47,51 @@ public sealed class Plugin : IDalamudPlugin
         _dtrBar = dtrBar;
 
         _configuration = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
-        _configuration.Initialize(pluginInterface);
-        _batteryService = new ArctisBatteryService(log, _configuration);
+        var previousUiHide = pluginInterface.UiBuilder.DisableUserUiHide;
+        _cleanupActions.Push(() => pluginInterface.UiBuilder.DisableUserUiHide = previousUiHide);
+        try
+        {
+            _configuration.Initialize(pluginInterface);
+            _batteryService = new ArctisBatteryService(log, _configuration);
+            _cleanupActions.Push(_batteryService.Dispose);
 
-        _overlayWindow = new OverlayWindow(_configuration, _batteryService);
-        _configWindow = new ConfigWindow(_configuration, _batteryService, _overlayWindow);
-        _windowSystem.AddWindow(_overlayWindow);
-        _windowSystem.AddWindow(_configWindow);
+            _overlayWindow = new OverlayWindow(_configuration, _batteryService);
+            _configWindow = new ConfigWindow(_configuration, _batteryService, _overlayWindow);
+            _cleanupActions.Push(_windowSystem.RemoveAllWindows);
+            _windowSystem.AddWindow(_overlayWindow);
+            _windowSystem.AddWindow(_configWindow);
 
-        _dtrEntry = dtrBar.Get(DtrEntryName);
-        _dtrEntry.Shown = false;
+            _dtrEntry = dtrBar.Get(DtrEntryName);
+            _cleanupActions.Push(() => _dtrBar.Remove(DtrEntryName));
+            _cleanupActions.Push(() => _dtrEntry.Shown = false);
+            _dtrEntry.Shown = false;
 
-        commandManager.AddHandler(
-            CommandName,
-            new CommandInfo(OnCommand)
-            {
-                HelpMessage = "設定画面を開きます。status / reconnect / debug も使用できます。",
-                ShowInHelp = true,
-            });
+            if (!commandManager.AddHandler(
+                    CommandName,
+                    new CommandInfo(OnCommand)
+                    {
+                        HelpMessage = "設定画面を開きます。status / reconnect / debug も使用できます。",
+                        ShowInHelp = true,
+                    }))
+                throw new InvalidOperationException("/gamebuds は既に登録されています。");
+            // 自分が登録に成功したコマンドだけを解除する。
+            _cleanupActions.Push(() => _commandManager.RemoveHandler(CommandName));
 
-        pluginInterface.UiBuilder.Draw += DrawUi;
-        pluginInterface.UiBuilder.OpenConfigUi += OpenConfigUi;
-        pluginInterface.UiBuilder.OpenMainUi += OpenConfigUi;
-        _log.Info("Arctis GameBuds Batteryを読み込みました。");
+            pluginInterface.UiBuilder.Draw += DrawUi;
+            _cleanupActions.Push(() => pluginInterface.UiBuilder.Draw -= DrawUi);
+            pluginInterface.UiBuilder.OpenConfigUi += OpenConfigUi;
+            _cleanupActions.Push(() => pluginInterface.UiBuilder.OpenConfigUi -= OpenConfigUi);
+            pluginInterface.UiBuilder.OpenMainUi += OpenConfigUi;
+            _cleanupActions.Push(() => pluginInterface.UiBuilder.OpenMainUi -= OpenConfigUi);
+            _log.Info("Arctis GameBuds Batteryを読み込みました。");
+        }
+        catch
+        {
+            // 初期化途中で失敗した場合も、取得ワーカーを含む確保済みリソースを解放する。
+            _disposed = true;
+            CleanupResources();
+            throw;
+        }
     }
 
     public void Dispose()
@@ -79,17 +102,38 @@ public sealed class Plugin : IDalamudPlugin
         }
 
         _disposed = true;
-        _pluginInterface.UiBuilder.Draw -= DrawUi;
-        _pluginInterface.UiBuilder.OpenConfigUi -= OpenConfigUi;
-        _pluginInterface.UiBuilder.OpenMainUi -= OpenConfigUi;
-        _pluginInterface.UiBuilder.DisableUserUiHide = false;
-        _commandManager.RemoveHandler(CommandName);
-        _dtrEntry.Shown = false;
-        _dtrBar.Remove(DtrEntryName);
-        _windowSystem.RemoveAllWindows();
-        _configuration.Save();
-        _batteryService.Dispose();
+        try
+        {
+            _configuration.Save();
+        }
+        catch (Exception exception)
+        {
+            _log.Warning(exception, "設定の保存に失敗しました。取得処理の終了は継続します。");
+        }
+        finally
+        {
+            CleanupResources();
+        }
         _log.Info("Arctis GameBuds Batteryをアンロードしました。");
+    }
+
+    private void CleanupResources()
+    {
+        List<Exception>? errors = null;
+        while (_cleanupActions.TryPop(out var cleanup))
+        {
+            try
+            {
+                cleanup();
+            }
+            catch (Exception exception)
+            {
+                // 一つの解除処理が失敗しても、残りをすべて実行する。
+                (errors ??= []).Add(exception);
+            }
+        }
+        if (errors is not null)
+            _log.Error(new AggregateException(errors), "プラグインの終了処理の一部でエラーが発生しました。");
     }
 
     private void DrawUi()
@@ -97,8 +141,6 @@ public sealed class Plugin : IDalamudPlugin
         _batteryService.Update();
         var state = _batteryService.Current;
         UpdateDtr(state);
-
-        _pluginInterface.UiBuilder.DisableUserUiHide = _configuration.ShowWhenGameUiHidden;
 
         var shouldTreatAsDisconnected = state.ShouldTreatAsDisconnected(
             DateTimeOffset.Now,
