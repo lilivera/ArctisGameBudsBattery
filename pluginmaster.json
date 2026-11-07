@@ -3,7 +3,7 @@
     "Author": "lilivera",
     "Name": "Arctis GameBuds Battery",
     "InternalName": "ArctisGameBudsBattery",
-    "AssemblyVersion": "0.1.1.0",
+    "AssemblyVersion": "0.1.2.0",
     "MinimumDalamudVersion": "15.0.0",
     "Punchline": "Arctis GameBudsの左右残量をゲーム内に表示します。",
     "Description": "SteelSeries Arctis GameBudsのUSBドングルから左右イヤホンのバッテリー残量を取得し、オーバーレイとDTRバーへ表示します。VID 1038 / PID 230A対応。ケース残量・Bluetooth単独接続には対応していません。",
@@ -12,10 +12,10 @@
     "ApplicableVersion": "any",
     "Tags": ["battery", "hardware", "arctis", "steelseries", "gamebuds"],
     "DalamudApiLevel": 15,
-    "LastUpdate": 1789807316,
-    "DownloadLinkInstall": "https://github.com/lilivera/ArctisGameBudsBattery/releases/download/v0.1.1/latest.zip",
-    "DownloadLinkUpdate": "https://github.com/lilivera/ArctisGameBudsBattery/releases/download/v0.1.1/latest.zip",
-    "DownloadLinkTesting": "https://github.com/lilivera/ArctisGameBudsBattery/releases/download/v0.1.1/latest.zip",
+    "LastUpdate": 1794029661,
+    "DownloadLinkInstall": "https://github.com/lilivera/ArctisGameBudsBattery/releases/download/v0.1.2/latest.zip",
+    "DownloadLinkUpdate": "https://github.com/lilivera/ArctisGameBudsBattery/releases/download/v0.1.2/latest.zip",
+    "DownloadLinkTesting": "https://github.com/lilivera/ArctisGameBudsBattery/releases/download/v0.1.2/latest.zip",
     "IsHide": false,
     "IsTestingExclusive": false
   }

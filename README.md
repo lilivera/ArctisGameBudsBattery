@@ -5,7 +5,7 @@
 SteelSeries Arctis GameBudsの左右バッテリー残量を、FINAL FANTASY XIV内に表示するDalamudプラグインです。
 [InzoneBudsBattery](https://github.com/zxe-ll/InzoneBudsBattery)をベースに、GameBuds用の通信・解析処理へ置き換えています。
 
-**バージョン0.1.1：初期化・終了処理、表示設定の不具合を修正。Windows実機で取得・再接続・停止を確認済み。ゲーム内での表示・操作は未検証です。**
+**バージョン0.1.2：プラグイン用アイコンを追加。残量取得・再接続・停止はv0.1.1でWindows実機確認済み。ゲーム内での表示・操作は未検証です。**
 
 ## 機能
 
