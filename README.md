@@ -1,5 +1,7 @@
 # Arctis GameBuds Battery
 
+<img src="images/icon.png" alt="左右のイヤホンとミント色のバッテリーを組み合わせたアイコン" width="128" height="128">
+
 SteelSeries Arctis GameBudsの左右バッテリー残量を、FINAL FANTASY XIV内に表示するDalamudプラグインです。
 [InzoneBudsBattery](https://github.com/zxe-ll/InzoneBudsBattery)をベースに、GameBuds用の通信・解析処理へ置き換えています。
 

@@ -8,6 +8,7 @@
     "Punchline": "Arctis GameBudsの左右残量をゲーム内に表示します。",
     "Description": "SteelSeries Arctis GameBudsのUSBドングルから左右イヤホンのバッテリー残量を取得し、オーバーレイとDTRバーへ表示します。VID 1038 / PID 230A対応。ケース残量・Bluetooth単独接続には対応していません。",
     "RepoUrl": "https://github.com/lilivera/ArctisGameBudsBattery",
+    "IconUrl": "https://raw.githubusercontent.com/lilivera/ArctisGameBudsBattery/main/images/icon.png",
     "ApplicableVersion": "any",
     "Tags": ["battery", "hardware", "arctis", "steelseries", "gamebuds"],
     "DalamudApiLevel": 15,
