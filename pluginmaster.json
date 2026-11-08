@@ -12,10 +12,10 @@
     "ApplicableVersion": "any",
     "Tags": ["battery", "hardware", "arctis", "steelseries", "gamebuds"],
     "DalamudApiLevel": 15,
-    "LastUpdate": 1794029661,
-    "DownloadLinkInstall": "https://github.com/lilivera/ArctisGameBudsBattery/releases/download/v0.1.2/latest.zip",
-    "DownloadLinkUpdate": "https://github.com/lilivera/ArctisGameBudsBattery/releases/download/v0.1.2/latest.zip",
-    "DownloadLinkTesting": "https://github.com/lilivera/ArctisGameBudsBattery/releases/download/v0.1.2/latest.zip",
+    "LastUpdate": 1794132462,
+    "DownloadLinkInstall": "https://raw.githubusercontent.com/lilivera/ArctisGameBudsBattery/main/dist/v0.1.2/latest.zip",
+    "DownloadLinkUpdate": "https://raw.githubusercontent.com/lilivera/ArctisGameBudsBattery/main/dist/v0.1.2/latest.zip",
+    "DownloadLinkTesting": "https://raw.githubusercontent.com/lilivera/ArctisGameBudsBattery/main/dist/v0.1.2/latest.zip",
     "IsHide": false,
     "IsTestingExclusive": false
   }

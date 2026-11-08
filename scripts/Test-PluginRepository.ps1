@@ -15,7 +15,8 @@ $metadata = $project.Project.PropertyGroup
 $version = [string]$metadata.AssemblyVersion
 $expectedTag = 'v' + ($version -replace '\.0$', '')
 $repositoryUrl = [string]$metadata.RepoUrl
-$downloadUrl = "$repositoryUrl/releases/download/$expectedTag/latest.zip"
+$repositoryPath = ([Uri]$repositoryUrl).AbsolutePath.Trim('/')
+$downloadUrl = "https://raw.githubusercontent.com/$repositoryPath/main/dist/$expectedTag/latest.zip"
 
 foreach ($name in @('Author', 'Name', 'InternalName', 'AssemblyVersion', 'MinimumDalamudVersion', 'RepoUrl', 'Punchline', 'Description', 'ApplicableVersion')) {
     if ($entry.$name -ne [string]$metadata.$name) { throw "プロジェクトと配布定義の値が一致しません: $name" }

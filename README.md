@@ -44,6 +44,7 @@ https://raw.githubusercontent.com/lilivera/ArctisGameBudsBattery/main/pluginmast
 4. `/gamebuds` で設定画面を開きます。
 
 配布ZIPは[GitHub Releases](https://github.com/lilivera/ArctisGameBudsBattery/releases/latest)からも取得できます。
+カスタムリポジトリでは、GitHub Releasesへの通信で504エラーになる環境でも取得できるよう、同じZIPを `dist/vX.Y.Z/latest.zip` から配布します。
 すでにローカルのDev Pluginとして読み込んでいる場合は、そちらをアンロードしてから切り替えてください。
 
 導入済みの場合は `/xlplugins` の更新操作で最新版へ更新できます。設定は引き継がれ、更新間隔に対して短すぎる鮮度しきい値だけ自動補正されます。
@@ -94,9 +95,11 @@ dotnet test .\tests\ArctisGameBudsBattery.Plugin.Tests -c Release --no-build
 2. `pluginmaster.json` のバージョン、3つのダウンロードURL、`LastUpdate`（UTCのUnix秒）を更新します。
 3. `docs/releases/vX.Y.Z.md` に日本語のリリースノートを追加します。
 4. `scripts/Build.ps1` で検証してコミットし、バージョンに対応するタグ（例：`0.1.1.0` → `v0.1.1`）を先にpushします。
-5. GitHub Actionsの成功と配布ZIPの取得を確認してから、そのコミットを `main` へpushします。
+5. GitHub Actionsの成功後、公開された `latest.zip` を `dist/vX.Y.Z/latest.zip` にダウンロードします。ローカルで再ビルドしたZIPではなく、公開されたファイルをそのまま配置してください。
+6. GitHub ReleaseのSHA256と一致すること、および `scripts/Test-PluginRepository.ps1 -PackagePath dist/vX.Y.Z/latest.zip -ReleaseTag vX.Y.Z` の成功を確認し、ZIPの追加をコミットして `main` へpushします。
+7. 公開された `pluginmaster.json` のダウンロード先へ、Dalamudと同じ `Accept: application/zip` を付けてGETし、取得したZIPを再検証します。
 
-GitHub Actionsがビルド・テスト・配布定義の整合性検査を実行し、GitHub Releaseへ `latest.zip` を添付します。
+GitHub Actionsがビルド・テスト・配布定義の整合性検査を実行し、GitHub Releaseへ `latest.zip` を添付します。3つのダウンロードURLは、バージョンに対応する `https://raw.githubusercontent.com/lilivera/ArctisGameBudsBattery/main/dist/vX.Y.Z/latest.zip` を指定してください。
 公開が完了すると、同じカスタムリポジトリURLからインストール・更新できます。
 この順序により、配布ZIPが完成するまでカスタムリポジトリは既存の利用可能なバージョンを案内します。
 

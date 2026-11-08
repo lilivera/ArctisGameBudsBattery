@@ -9,5 +9,7 @@ TestResults/
 *.suo
 *.log
 *.zip
+# カスタムリポジトリ向けに検証した公開ZIPのみ追跡する。
+!dist/*/latest.zip
 # 調査用に取得した参照リポジトリ
 .reference/
